@@ -54,31 +54,45 @@
 
 // createPoolWithIPv4();
 
-const { Pool } = require('pg');
-require('dotenv').config();
 
-console.log("Connecting to DB with:", {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-});
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// const { Pool } = require('pg');
+// require('dotenv').config();
+
+// console.log("Connecting to DB with:", {
+//   host: process.env.DB_HOST,
+//   port: process.env.DB_PORT,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME
+// });
+
+// const pool = new Pool({
+//   host: process.env.DB_HOST,
+//   port: Number(process.env.DB_PORT),
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+//   ssl: {
+//     require: true,
+//     rejectUnauthorized: false,
+//   },
+// });
+
+// pool.connect()
+//   .then(() => console.log("✅ Connected to Supabase via Transaction Pooler"))
+//   .catch(err => console.error("❌ Supabase connection error:", err.stack));
+
+// module.exports = pool;
+///////////////////////////////////////////////////////////
+
+const { Pool } = require('pg');
 
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  ssl: {
-    require: true,
-    rejectUnauthorized: false,
-  },
+  connectionString: process.env.SUPABASE_DB_URL,
+  ssl: { rejectUnauthorized: false } // Required on some hosts like Render
 });
-
-pool.connect()
-  .then(() => console.log("✅ Connected to Supabase via Transaction Pooler"))
-  .catch(err => console.error("❌ Supabase connection error:", err.stack));
 
 module.exports = pool;
