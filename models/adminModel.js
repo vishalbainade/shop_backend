@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const pool = require("../db");
 
 const findAdminByEmail = async (email) => {
   const result = await pool.query("SELECT * FROM admins WHERE email = $1", [email]);
