@@ -18,14 +18,14 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const pool = new Pool({
-  host: process.env.DB_HOST,            // ← Forces IPv4 DNS resolution
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: process.env.DB_HOST,             // <-- Ensure using hostname, not IP
+  port: process.env.DB_PORT,             // <-- Ensure using correct port (5432)
+  user: process.env.DB_USER,             // <-- Ensure using username
+  password: process.env.DB_PASSWORD,     // <-- Ensure using password
+  database: process.env.DB_NAME,         // <-- Ensure using database name
   ssl: {
-    rejectUnauthorized: false,
-    require: true,
+    rejectUnauthorized: false,           // Necessary for Supabase SSL connection
+    require: true,                       // Enforce SSL connection
   },
 });
 
@@ -34,3 +34,4 @@ pool.connect()
   .catch(err => console.error("❌ Supabase connection error:", err.stack));
 
 module.exports = pool;
+
