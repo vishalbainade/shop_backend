@@ -92,17 +92,12 @@ const { Pool } = require('pg');
 
 const pool = new Pool({
   connectionString: process.env.SUPABASE_DB_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: { rejectUnauthorized: false },
 });
 
 pool.connect()
-  .then(() => {
-    console.log('✅ DB Connected Successfully');
-  })
-  .catch((err) => {
-    console.error('❌ DB Connection Failed:', err.message);
-  });
+  .then(() => console.log('✅ DB Connected Successfully'))
+  .catch((err) => console.error('❌ DB Connection Failed:', err.message));
 
 module.exports = pool;
+
