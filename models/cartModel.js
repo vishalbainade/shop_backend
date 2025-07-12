@@ -56,7 +56,7 @@
 
 
 
-const pool = require("../config/db");
+const pool = require("../db");
 
 // Check if item exists in user's cart
 const findCartItem = (user_id, product_id) => {
