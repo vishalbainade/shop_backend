@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const pool = require('../db');
 
 // Get orders by User ID (for normal users)
 const getOrdersByUserId = async (userId) => {
