@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const pool = require("../db");
 
 // Get User Profile
 exports.getUserProfile = async (req, res) => {
