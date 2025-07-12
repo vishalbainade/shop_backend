@@ -17,30 +17,40 @@
 
 
 const { Pool } = require('pg');
-const dns = require('dns');
-const { promisify } = require('util');
+const dns = require('dns').promises;
 require('dotenv').config();
 
-// Force IPv4 resolution
-const customLookup = (hostname, options, callback) => {
-  return dns.lookup(hostname, { family: 4 }, callback);
-};
+async function createPoolWithIPv4() {
+  try {
+    // ✅ Resolve IPv4 address only
+    const result = await dns.lookup(process.env.DB_HOST, { family: 4 });
+    const ipv4Address = result.address;
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT, 10),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  ssl: {
-    rejectUnauthorized: false,
-    require: true
-  },
-  lookup: customLookup // ✅ Force IPv4 lookup
-});
+    console.log("Resolved IPv4:", ipv4Address);
 
-pool.connect()
-  .then(() => console.log("✅ Connected to Supabase PostgreSQL via IPv4"))
-  .catch(err => console.error("❌ Supabase connection error:", err));
+    const pool = new Pool({
+      host: ipv4Address, // ✅ use IP instead of hostname to skip DNS resolution
+      port: Number(process.env.DB_PORT),
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      ssl: {
+        rejectUnauthorized: false,
+        require: true
+      }
+    });
 
-module.exports = pool;
+    pool.connect()
+      .then(() => console.log("✅ Connected to Supabase via IPv4"))
+      .catch(err => console.error("❌ Supabase connection error (forced IPv4):", err.stack));
+
+    module.exports = pool;
+
+  } catch (error) {
+    console.error("❌ Failed to resolve IPv4 for Supabase DB host:", error);
+    process.exit(1);
+  }
+}
+
+createPoolWithIPv4();
+
