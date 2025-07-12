@@ -17,6 +17,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.14.1",
-    "razorpay": "^2.9.6"
+    "razorpay": "^2.9.6",
+    "@supabase/supabase-js": "^2.45.4"
   }
 }
