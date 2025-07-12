@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const pool = require("../db");
 const { getUserAddressById } = require("../models/userModel");
 
 // GET /api/checkout/init
