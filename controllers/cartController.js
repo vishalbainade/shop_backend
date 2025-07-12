@@ -68,7 +68,7 @@
 //   };
   
 
-const pool = require("../config/db");
+const pool = require("../db");
 const {
   findCartItem,
   insertCartItem,
