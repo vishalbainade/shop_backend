@@ -16,7 +16,7 @@
 
 const express = require('express');
 const pool = require('../db');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken } = require('../middlewares/auth');
 const router = express.Router();
 
 // Get all orders for a user
