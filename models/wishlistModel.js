@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const pool = require("../db");
 
 // Check if item exists in user's wishlist
 const findWishlistItem = (user_id, product_id) => {
