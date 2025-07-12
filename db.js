@@ -21,11 +21,14 @@ const dns = require('dns');
 const { promisify } = require('util');
 require('dotenv').config();
 
-// Force IPv4 DNS resolution
-const lookup = promisify(dns.lookup);
+// Force IPv4 resolution
+const customLookup = (hostname, options, callback) => {
+  return dns.lookup(hostname, { family: 4 }, callback);
+};
+
 const pool = new Pool({
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
+  port: parseInt(process.env.DB_PORT, 10),
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -33,14 +36,11 @@ const pool = new Pool({
     rejectUnauthorized: false,
     require: true
   },
-  // 👇 Add this line to force IPv4
-  lookup: (hostname, options, callback) => {
-    return lookup(hostname, { family: 4 }, callback);
-  }
+  lookup: customLookup // ✅ Force IPv4 lookup
 });
 
 pool.connect()
-  .then(() => console.log("✅ Connected to Supabase PostgreSQL over IPv4!"))
-  .catch(err => console.error("❌ Supabase connection error:", err.stack));
+  .then(() => console.log("✅ Connected to Supabase PostgreSQL via IPv4"))
+  .catch(err => console.error("❌ Supabase connection error:", err));
 
 module.exports = pool;
