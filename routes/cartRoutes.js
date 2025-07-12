@@ -15,10 +15,9 @@
 
 // module.exports = router;
 
-
 const express = require('express');
 const pool = require('../db');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken } = require('../middleware/auth'); // Verify this path
 const router = express.Router();
 
 // Get cart items
@@ -36,20 +35,17 @@ router.get('/', verifyToken, async (req, res) => {
 router.post('/add', verifyToken, async (req, res) => {
   const { product_id, quantity } = req.body;
   try {
-    // Check if item exists in cart
     const existingItem = await pool.query(
       'SELECT * FROM find_cart_item($1, $2)',
       [req.user.id, product_id]
     );
 
     if (existingItem.rows.length > 0) {
-      // Update quantity
       await pool.query(
         'SELECT update_cart_item_quantity($1, $2, $3)',
         [quantity, req.user.id, product_id]
       );
     } else {
-      // Insert new cart item
       await pool.query(
         'SELECT insert_cart_item($1, $2, $3)',
         [req.user.id, product_id, quantity]
