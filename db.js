@@ -95,4 +95,14 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false } // Required on some hosts like Render
 });
 
+pool.connect()
+  .then(client => {
+    console.log('✅ DB Connected Successfully');
+    client.release();
+  })
+  .catch(err => {
+    console.error('❌ DB Connection Failed:', err.message);
+  });
+
+
 module.exports = pool;
