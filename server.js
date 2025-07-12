@@ -68,7 +68,7 @@ app.use('/api/wishlist', require('./routes/wishlistRoutes'));
 app.use('/api/checkout', require('./routes/checkoutRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/pay', require('./routes/razorpayRoutes'));
-app.use('/api/onlinepay', require('./routes/onlinepay'));
+app.use('/api/onlinepay', require('./routes/onlinePaymentRoutes'));
 
 app.listen(process.env.PORT || 5000, () => {
   console.log(`Server running on port ${process.env.PORT || 5000}`);
