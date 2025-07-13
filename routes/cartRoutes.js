@@ -16,14 +16,17 @@
 // module.exports = router;
 
 const express = require('express');
-const pool = require('../db');
-const { verifyToken } = require('../middlewares/auth'); // Verify this path
+const { 
+  findCartItem, insertCartItem, updateCartItemQuantity, 
+  getUserCartItems, deleteCartItem, removeItemsFromCart 
+} = require('../models/cartmodel');
+const { verifyToken } = require('../middlewares/auth');
 const router = express.Router();
 
 // Get cart items
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM get_user_cart_items($1)', [req.user.id]);
+    const result = await getUserCartItems(req.user.id);
     res.json(result.rows);
   } catch (err) {
     console.error('Get cart error:', err.stack);
@@ -35,24 +38,15 @@ router.get('/', verifyToken, async (req, res) => {
 router.post('/add', verifyToken, async (req, res) => {
   const { product_id, quantity } = req.body;
   try {
-    const existingItem = await pool.query(
-      'SELECT * FROM find_cart_item($1, $2)',
-      [req.user.id, product_id]
-    );
+    const existingItem = await findCartItem(req.user.id, product_id);
 
     if (existingItem.rows.length > 0) {
-      await pool.query(
-        'SELECT update_cart_item_quantity($1, $2, $3)',
-        [quantity, req.user.id, product_id]
-      );
+      await updateCartItemQuantity(quantity, req.user.id, product_id);
     } else {
-      await pool.query(
-        'SELECT insert_cart_item($1, $2, $3)',
-        [req.user.id, product_id, quantity]
-      );
+      await insertCartItem(req.user.id, product_id, quantity);
     }
 
-    const result = await pool.query('SELECT * FROM get_user_cart_items($1)', [req.user.id]);
+    const result = await getUserCartItems(req.user.id);
     res.json(result.rows);
   } catch (err) {
     console.error('Add to cart error:', err.stack);
@@ -60,7 +54,7 @@ router.post('/add', verifyToken, async (req, res) => {
   }
 });
 
-// Update cart item quantity
+// Update quantity
 router.put('/update/:item_id', verifyToken, async (req, res) => {
   const { item_id } = req.params;
   const { quantity } = req.body;
@@ -69,7 +63,7 @@ router.put('/update/:item_id', verifyToken, async (req, res) => {
       'UPDATE cart_items SET quantity = $1 WHERE id = $2 AND user_id = $3',
       [quantity, item_id, req.user.id]
     );
-    const result = await pool.query('SELECT * FROM get_user_cart_items($1)', [req.user.id]);
+    const result = await getUserCartItems(req.user.id);
     res.json(result.rows);
   } catch (err) {
     console.error('Update cart error:', err.stack);
@@ -81,8 +75,8 @@ router.put('/update/:item_id', verifyToken, async (req, res) => {
 router.delete('/delete/:item_id', verifyToken, async (req, res) => {
   const { item_id } = req.params;
   try {
-    await pool.query('SELECT delete_cart_item($1)', [item_id]);
-    const result = await pool.query('SELECT * FROM get_user_cart_items($1)', [req.user.id]);
+    await deleteCartItem(item_id);
+    const result = await getUserCartItems(req.user.id);
     res.json(result.rows);
   } catch (err) {
     console.error('Delete cart error:', err.stack);
@@ -94,8 +88,8 @@ router.delete('/delete/:item_id', verifyToken, async (req, res) => {
 router.post('/remove', verifyToken, async (req, res) => {
   const { product_ids } = req.body;
   try {
-    await pool.query('SELECT remove_items_from_cart($1, $2)', [req.user.id, product_ids]);
-    const result = await pool.query('SELECT * FROM get_user_cart_items($1)', [req.user.id]);
+    await removeItemsFromCart(req.user.id, product_ids);
+    const result = await getUserCartItems(req.user.id);
     res.json(result.rows);
   } catch (err) {
     console.error('Remove cart items error:', err.stack);
