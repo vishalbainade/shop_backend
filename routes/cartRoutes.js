@@ -19,7 +19,7 @@ const express = require('express');
 const { 
   findCartItem, insertCartItem, updateCartItemQuantity, 
   getUserCartItems, deleteCartItem, removeItemsFromCart 
-} = require('../models/cartmodel');
+} = require('../models/cartModel');
 const { verifyToken } = require('../middlewares/auth');
 const router = express.Router();
 
